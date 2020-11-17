@@ -1,0 +1,115 @@
+{
+	"info": {
+		"_postman_id": "36f97949-9686-4284-8a33-2b97914342f3",
+		"name": "Transbank Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6ada47a5-fe6c-446c-ba72-61c7f2c038f5",
+						"exec": [
+							"let firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"let lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+							"let age = pm.variables.replaceIn('{{$randomInt}}');\r",
+							"\r",
+							"pm.globals.set('firstName', firstName);\r",
+							"pm.globals.set('lastName', lastName);\r",
+							"pm.globals.set('age', age);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "2b124f90-fdb0-4c1e-ae3c-d62fe0946c5a",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n        \"firstMame\": \"{{firstName}}\",\n        \"lastName\": \"{{lastName}}\",\n        \"age\": {{age}}\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/people/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"people",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUsers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9fb40d82-b3be-4cac-8252-939e251ca9f6",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Has valid data\", function () {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response[0].firstMame).to.eql(pm.globals.get(\"firstName\"));\r",
+							"    pm.expect(response[0].lastName).to.eql(pm.globals.get(\"lastName\"));\r",
+							"    pm.expect(response[0].age).to.equal(parseInt(pm.globals.get(\"age\")));\r",
+							"    pm.expect(response[0].id).to.match(/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/i);\r",
+							"    pm.globals.set('id', response[0].id);\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/people/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"people",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
